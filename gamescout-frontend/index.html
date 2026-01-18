@@ -68,13 +68,13 @@
 
     .bg-img{
       position: absolute;
-      opacity: 0.35;            /* more visible */
+      opacity: 0.35;            
       filter: saturate(1.15) contrast(1.05);
       transform-origin: center;
     }
 
     .bg-img.mario{
-      width: 320px;             /* bigger */
+      width: 320px;            
       left: -40px;
       top: 180px;
       transform: rotate(-10deg);
@@ -82,7 +82,7 @@
     }
 
     .bg-img.sonic{
-      width: 300px;             /* bigger */
+      width: 300px;             
       right: -30px;
       top: 520px;
       transform: rotate(9deg);
@@ -98,13 +98,11 @@
 }
 
 
-    /* keep content above background */
     .content-wrap{
       position: relative;
       z-index: 5;
     }
-
-    /* ---- Brand / logo ---- */
+    
     .brand{
       display: flex;
       align-items: center;
@@ -112,7 +110,7 @@
     }
 
     .brand img{
-      width: 92px;              /* BIGGER FNAF */
+      width: 92px;             
       height: 92px;
       object-fit: contain;
       image-rendering: pixelated;
@@ -121,7 +119,7 @@
 
     @media (min-width: 768px){
       .brand img{
-        width: 120px;           /* even bigger on desktop */
+        width: 120px;       
         height: 120px;
       }
     }
