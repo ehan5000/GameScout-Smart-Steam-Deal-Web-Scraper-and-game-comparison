@@ -13,9 +13,6 @@ app.get("/", (req, res) => {
   res.send("GameScout backend is running");
 });
 
-/** -----------------------------
- * Helpers
- * ------------------------------ */
 
 function buildSteamAppDetailsUrl(appid, cc = "ca", lang = "en") {
   return `https://store.steampowered.com/api/appdetails?appids=${encodeURIComponent(
@@ -173,15 +170,6 @@ async function fetchSteamAppDetails(appid, cc = "ca", lang = "en") {
   };
 }
 
-/** -----------------------------
- * Routes
- * ------------------------------ */
-
-/**
- * Analyze either:
- * - { appid: 570 }  (recommended)
- * - { steamUrl: "https://store.steampowered.com/app/570/Dota_2/" } (fallback)
- */
 app.post("/analyze", async (req, res) => {
   const { steamUrl, appid, cc, lang } = req.body;
 
@@ -373,7 +361,6 @@ app.post("/search", async (req, res) => {
 });
 
 /**
- * OPTIONAL: Enrich a list of store URLs with Yellowcake (shows "deeper crawl")
  * Body: { urls: ["https://store.steampowered.com/app/620/Portal_2/"], limit?: 5 }
  */
 app.post("/enrich", async (req, res) => {
