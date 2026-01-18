@@ -1,0 +1,275 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>GameScout</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --pixel: "Press Start 2P", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      --ui: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Noto Sans", "Helvetica Neue", sans-serif;
+    }
+
+    html, body {
+      font-family: var(--ui);
+      background: #000;
+      min-height: 100%;
+    }
+
+    button, input, textarea, select { font-family: var(--ui); }
+
+    .glass {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.10);
+      backdrop-filter: blur(8px);
+    }
+
+    .muted { color: rgba(226,232,240,0.70); }
+
+    .pixel {
+      font-family: var(--pixel);
+      -webkit-font-smoothing: none;
+      -moz-osx-font-smoothing: grayscale;
+      text-rendering: geometricPrecision;
+      line-height: 1.15;
+      letter-spacing: 0.2px;
+    }
+
+    .mono {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    }
+
+    /* ---- Background art layer ---- */
+    .bg-layer{
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      overflow: hidden;
+      background: #000;
+    }
+
+    .bg-layer::after{
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(700px 400px at 20% 15%, rgba(124,92,255,0.12), transparent 55%),
+        radial-gradient(600px 380px at 80% 70%, rgba(124,92,255,0.10), transparent 60%);
+      opacity: 0.35;
+    }
+
+    .bg-img{
+      position: absolute;
+      opacity: 0.35;            /* more visible */
+      filter: saturate(1.15) contrast(1.05);
+      transform-origin: center;
+    }
+
+    .bg-img.mario{
+      width: 320px;             /* bigger */
+      left: -40px;
+      top: 180px;
+      transform: rotate(-10deg);
+      opacity: 0.28;
+    }
+
+    .bg-img.sonic{
+      width: 300px;             /* bigger */
+      right: -30px;
+      top: 520px;
+      transform: rotate(9deg);
+      opacity: 0.26;
+    }
+
+   .bg-img.cat{
+  width: 260px;
+  left: 75%;
+  top: 190px;
+  transform: rotate(-8deg);
+  opacity: 0.32;
+}
+
+
+    /* keep content above background */
+    .content-wrap{
+      position: relative;
+      z-index: 5;
+    }
+
+    /* ---- Brand / logo ---- */
+    .brand{
+      display: flex;
+      align-items: center;
+      gap: 18px;
+    }
+
+    .brand img{
+      width: 92px;              /* BIGGER FNAF */
+      height: 92px;
+      object-fit: contain;
+      image-rendering: pixelated;
+      filter: drop-shadow(0 8px 18px rgba(0,0,0,0.55));
+    }
+
+    @media (min-width: 768px){
+      .brand img{
+        width: 120px;           /* even bigger on desktop */
+        height: 120px;
+      }
+    }
+  </style>
+</head>
+
+<body class="text-slate-100">
+  <!-- background art -->
+  <div class="bg-layer">
+    <img class="bg-img mario" src="./assets/mario.png" alt="" />
+    <img class="bg-img sonic" src="./assets/sonic.png" alt="" />
+    <img class="bg-img cat" src="./assets/cat.png" alt="" />
+  </div>
+
+  <div class="content-wrap max-w-3xl mx-auto px-4 py-8">
+    <header class="mb-6">
+      <div class="brand">
+        <img src="./assets/fnaf.png" alt="GameScout icon" />
+        <div>
+          <h1 class="pixel text-4xl md:text-5xl font-extrabold tracking-tight">GameScout</h1>
+          <p class="muted mt-3">
+            Search Steam, analyze deals, and get a plain-English recommendation.
+          </p>
+        </div>
+      </div>
+    </header>
+
+    <!-- SEARCH -->
+    <section class="glass rounded-2xl p-5 shadow-xl mb-5">
+      <div class="flex items-center justify-between gap-3 flex-wrap">
+        <h2 class="pixel text-lg font-bold">Search</h2>
+        <span id="searchStatus" class="text-sm muted"></span>
+      </div>
+
+      <div class="mt-4 grid grid-cols-1 md:grid-cols-12 gap-3">
+        <input id="q" class="md:col-span-8 rounded-xl px-4 py-3 bg-black/20 border border-white/10"
+               placeholder='Try: "roguelike", "co-op", "horror"' />
+        <input id="limit" type="number" min="1" max="20" value="6"
+               class="md:col-span-2 rounded-xl px-4 py-3 bg-black/20 border border-white/10" />
+        <button id="btnSearch"
+                class="md:col-span-2 rounded-xl px-4 py-3 font-bold bg-violet-500/90 hover:bg-violet-500 transition">
+          Search
+        </button>
+      </div>
+
+      <div id="searchResults" class="mt-5 grid grid-cols-1 md:grid-cols-3 gap-3"></div>
+
+      <p class="muted text-xs mt-4">
+        Tip: Use “Add to Compare” on a result to build your compare list instantly.
+      </p>
+    </section>
+
+    <!-- ANALYZE -->
+    <section class="glass rounded-2xl p-5 shadow-xl mb-5">
+      <h2 class="pixel text-lg font-bold">Analyze</h2>
+      <p class="muted text-sm mt-1">Enter an AppID or paste a Steam URL.</p>
+
+      <div class="mt-4 grid grid-cols-1 md:grid-cols-12 gap-3">
+        <input id="appid" class="md:col-span-4 rounded-xl px-4 py-3 bg-black/20 border border-white/10"
+               placeholder="AppID (e.g., 620)" />
+        <input id="steamUrl" class="md:col-span-6 rounded-xl px-4 py-3 bg-black/20 border border-white/10"
+               placeholder="Steam URL (optional)" />
+        <button id="btnAnalyze"
+                class="md:col-span-2 rounded-xl px-4 py-3 font-bold bg-violet-500/90 hover:bg-violet-500 transition">
+          Analyze
+        </button>
+      </div>
+
+      <div id="analyzeCard" class="mt-5 hidden">
+        <div class="rounded-2xl border border-white/10 bg-black/20 p-5">
+          <div class="flex items-start justify-between gap-4 flex-wrap">
+            <div>
+              <div id="gameTitle" class="pixel text-2xl font-extrabold"></div>
+              <div id="gameMeta" class="muted mt-1 text-sm"></div>
+            </div>
+
+            <div class="flex gap-2 items-center">
+              <span id="verdictBadge" class="px-3 py-1 rounded-full text-sm font-bold border"></span>
+              <span id="scoreBadge" class="px-3 py-1 rounded-full text-sm font-bold border"></span>
+            </div>
+          </div>
+
+          <div class="mt-4 grid grid-cols-1 md:grid-cols-3 gap-3">
+            <div class="rounded-xl border border-white/10 bg-black/10 p-4">
+              <div class="muted text-xs">Current price</div>
+              <div id="priceNow" class="text-lg font-bold mt-1"></div>
+            </div>
+
+            <div class="rounded-xl border border-white/10 bg-black/10 p-4">
+              <div class="muted text-xs">Original price</div>
+              <div id="priceOrig" class="text-lg font-bold mt-1"></div>
+            </div>
+
+            <div class="rounded-xl border border-white/10 bg-black/10 p-4">
+              <div class="muted text-xs">Discount</div>
+              <div id="discount" class="text-lg font-bold mt-1"></div>
+            </div>
+          </div>
+
+          <div class="mt-4">
+            <div class="muted text-xs">Recommendation</div>
+            <div id="recommendation" class="text-base font-semibold mt-1"></div>
+            <div id="reason" class="muted text-sm mt-2"></div>
+          </div>
+
+          <div class="mt-4 flex flex-wrap gap-2" id="tags"></div>
+
+          <div class="mt-4 flex gap-3 flex-wrap items-center">
+            <a id="openSteam" target="_blank" rel="noreferrer"
+               class="inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-white/10 bg-black/10 hover:bg-black/20 transition">
+              Open on Steam
+            </a>
+
+            <button id="toggleDebug"
+              class="inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-white/10 bg-black/10 hover:bg-black/20 transition">
+              Show debug JSON
+            </button>
+          </div>
+
+          <pre id="debugJson" class="mono text-xs mt-4 hidden rounded-xl border border-white/10 bg-black/30 p-4 overflow-auto"></pre>
+        </div>
+      </div>
+
+      <div id="analyzeError" class="mt-4 hidden rounded-xl border border-red-500/30 bg-red-500/10 p-4 text-red-200"></div>
+    </section>
+
+    <!-- COMPARE -->
+    <section class="glass rounded-2xl p-5 shadow-xl">
+      <h2 class="pixel text-lg font-bold">Compare</h2>
+      <p class="muted text-sm mt-1">Comma-separated AppIDs (ranks by score).</p>
+
+      <div class="mt-4 grid grid-cols-1 md:grid-cols-12 gap-3">
+        <input id="compare" class="md:col-span-10 rounded-xl px-4 py-3 bg-black/20 border border-white/10"
+               placeholder="e.g., 620, 570, 730" />
+        <button id="btnCompare"
+                class="md:col-span-2 rounded-xl px-4 py-3 font-bold bg-violet-500/90 hover:bg-violet-500 transition">
+          Compare
+        </button>
+      </div>
+
+      <div id="compareOut" class="mt-5"></div>
+    </section>
+
+    <footer class="mt-8 muted text-sm">
+      Backend: <span class="mono">http://localhost:3001</span>
+    </footer>
+  </div>
+
+  <script src="./app.js"></script>
+</body>
+</html>
